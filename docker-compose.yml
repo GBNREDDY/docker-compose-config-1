@@ -1,0 +1,51 @@
+version: "3.9"
+services:
+  web:
+    build: .
+    links:
+      - mongo
+      - mysql
+    ports:
+      - "5000:5000"
+  redis:
+    image: redis
+  mysql:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'my_db'
+      MYSQL_USER: 'toor'
+      MYSQL_PASSWORD: 'toor'
+      MYSQL_ROOT_PASSWORD: 'toor'
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_vol:/var/lib/mysql
+    expose:
+      - '3306'
+  mongo:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=toor
+      - MONGO_INITDB_ROOT_PASSWORD=toor
+      - MONGO_INITDB_DATABASE=mydb
+    volumes:
+      - mongo_vol:/var/lib/mongo
+  mongo-express:
+    image: mongo-express
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      - ME_CONFIG_MONGODB_AUTH_DATABASE=admin
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=toor
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=toor
+      - ME_CONFIG_BASICAUTH_USERNAME=toor
+      - ME_CONFIG_BASICAUTH_PASSWORD=toor
+    links:
+      - mongo
+    ports:
+      - "8081:8081"
+volumes:
+    mysql_vol:
+    mongo_vol:
